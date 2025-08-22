@@ -1,0 +1,58 @@
+/* src/styles/navbar.css */
+
+/* Toolbar layout */
+.nav-toolbar {
+  @apply flex items-center justify-between px-2 gap-2;
+}
+
+/* Left: logo + brand */
+.logo-group {
+  @apply flex items-center gap-1 min-w-0;
+}
+
+.logo-icon {
+  font-size: 90px !important; /* ensure it beats MUI’s default */
+  margin-top: -12px;
+  color: #fff;
+  line-height: 1; /* avoids extra inline-block vertical space */
+}
+
+/* If you use "Lobster", make sure the Google Font link is loaded */
+.brand {
+  font-family: "Lobster", cursive !important;
+}
+
+/* Center: search container */
+.center {
+  @apply flex-1 flex justify-center px-2;
+}
+
+/* Search field (TextField root) */
+.search {
+  @apply flex-1 w-1/2 min-w-[300px] max-w-[60%];
+}
+
+/* Style the MUI Outlined input inside the TextField */
+.search .MuiOutlinedInput-root {
+  @apply bg-white rounded-full px-4 shadow-none;
+}
+
+/* Remove the default outline border */
+.search .MuiOutlinedInput-root fieldset {
+  border: none;
+}
+
+/* Inner input styles */
+.search input {
+  @apply text-black py-2;
+}
+
+/* Placeholder color */
+.search input::placeholder {
+  @apply text-gray-400;
+}
+
+/* Right: avatar group */
+.right-group {
+  @apply flex items-center gap-1;
+}

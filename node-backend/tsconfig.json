@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    // File layout (recommended)
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    // Target & module for Node
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+
+    // ESM settings
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+
+    // Types for Node
+    "lib": ["ES2023"],
+    "types": ["node"],
+
+    // DX / typing
+    "strict": true,
+    "skipLibCheck": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
+    // Useful for Express default import
+    "esModuleInterop": true,               // lets you `import express from "express"`
+    "allowSyntheticDefaultImports": true,  // implied by esModuleInterop but harmless
+
+    // Outputs (optional)
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true
+  }
+}
