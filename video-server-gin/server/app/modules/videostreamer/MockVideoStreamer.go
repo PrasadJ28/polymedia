@@ -1,35 +1,15 @@
-package main
+package videostreamer
 
 import (
 	"fmt"
-	"io"
-	"log"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
-const url = "https://download.samplelib.com/mp4/sample-5s.mp4"
-
-func downloadBytes(rawURL string) ([]byte, error) {
-	client := &http.Client{Timeout: 30 * time.Second}
-	resp, err := client.Get(rawURL)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return nil, fmt.Errorf("unexpected status: %s", resp.Status)
-	}
-	return io.ReadAll(resp.Body)
-}
-
-func videoHandler(video []byte) gin.HandlerFunc {
-	totalSize := len(video)
+func VideoStreamHandler(streamer VideoStreamer, videoKey string, totalSize int) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		rangeHeader := c.GetHeader("Range")
 		var start, end int
@@ -79,7 +59,12 @@ func videoHandler(video []byte) gin.HandlerFunc {
 			end = totalSize - 1
 		}
 
-		chunk := video[start : end+1]
+		chunk, err := streamer.Seek(videoKey, start, end)
+		if err != nil {
+			c.String(http.StatusInternalServerError, "Error retrieving video: %v", err)
+			return
+		}
+
 		c.Header("Content-Range", fmt.Sprintf("bytes %d-%d/%d", start, end, totalSize))
 		c.Header("Accept-Ranges", "bytes")
 		c.Header("Content-Length", fmt.Sprintf("%d", len(chunk)))
@@ -87,32 +72,4 @@ func videoHandler(video []byte) gin.HandlerFunc {
 		c.Status(http.StatusPartialContent)
 		_, _ = c.Writer.Write(chunk)
 	}
-}
-
-func main() {
-	log.Println("downloading video…")
-	buf, err := downloadBytes(url)
-	if err != nil {
-		log.Fatalf("download failed: %v", err)
-	}
-	log.Printf("video bytes: %d\n", len(buf))
-
-	r := gin.Default()
-
-	r.NoRoute(func(c *gin.Context) {
-		c.String(http.StatusNotFound, "No route for %s %s\n", c.Request.Method, c.Request.URL.Path)
-	})
-
-	r.GET("/ping", func(c *gin.Context) { c.String(http.StatusOK, "pong\n") })
-
-	r.GET("/video", videoHandler(buf))
-
-	for _, ri := range r.Routes() {
-		log.Printf("route: %-6s %s -> %s", ri.Method, ri.Path, ri.Handler)
-	}
-
-	os.Setenv("PORT", "8081")
-	addr := ":" + os.Getenv("PORT")
-	log.Printf("listening on %s", addr)
-	log.Fatal(r.Run(addr))
 }
