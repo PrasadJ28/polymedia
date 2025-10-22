@@ -12,7 +12,7 @@ const VideoCard = () => {
       component="ul"
       sx={{   }}
     >
-      <Card component="li" sx={{ minWidth: 300, minHeight:180, flexGrow: 1, "--Card-radius": "0px" }}>
+      <Card component="li" sx={{ maxWidth: 300, minHeight:180, flexGrow: 1, "--Card-radius": "0px" }}>
         <CardCover>
           <video
             autoPlay
