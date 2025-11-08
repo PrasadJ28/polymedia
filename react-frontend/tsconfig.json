@@ -1,7 +1,29 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+  "compilerOptions": {
+    /* React + TS */
+    "jsx": "react-jsx",
+
+    /* Module resolution */
+    "moduleResolution": "bundler",       // modern for Vite
+    "moduleDetection": "force",
+    "esModuleInterop": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
+
+    /* Build behavior */
+    "noEmit": true,                      // let Vite handle builds
+    "skipLibCheck": true,
+    "isolatedModules": true,
+
+    /* Linting & safety */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Optional: extra clarity */
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"]
+  },
+  "include": ["src"]
 }

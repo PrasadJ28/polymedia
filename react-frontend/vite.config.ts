@@ -1,11 +1,22 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
+import svgr from 'vite-plugin-svgr';
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(),
+  plugins: [
+    react(),
     tailwindcss(),
+    svgr({
+      // ✅ ensures all .svg imports can be used as React components
+      include: '**/*.svg',
+      svgrOptions: {
+        exportType: 'named',
+        ref: true,
+        titleProp: true,
+      },
+    }),
   ],
   resolve: {
     alias: {
@@ -13,9 +24,9 @@ export default defineConfig({
     },
   },
   server: {
-    host: '127.0.0.1',   // force IPv4 binding
+    host: '127.0.0.1', // force IPv4 binding
     port: 5173,
-    strictPort: true,    // error if port is taken
-    open: true           // auto-open browser
-  }
-})
+    strictPort: true,  // error if port is taken
+    open: true,        // auto-open browser
+  },
+});
