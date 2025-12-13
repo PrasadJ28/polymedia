@@ -1,8 +1,9 @@
 
-import { Box } from "@mui/joy";
+import { Box, Button, Input } from "@mui/joy";
 import FlexiCard from "../components/FlexiCard";
 import type { ContentType } from '../components/FlexiCard';
 import StudioBar from "../components/StudioBar";
+import { ChangeEvent } from "react";
 
 const Dashboard = () => {
  const cards: ContentType[] = [
@@ -11,13 +12,18 @@ const Dashboard = () => {
     { type: 'video', src: 'https://www.w3schools.com/html/mov_bbb.mp4', caption: 'Sample video' },
   ];
 
+    const handleChange = (event:ChangeEvent<HTMLInputElement>) =>{
+        console.log(event.target.value);
+        console.log("Hello")
+    }
     return (
         <div>
             <StudioBar />
-        
+        <Input type="file" onChange={ handleChange } />
+         <Button>Upload</Button>
         <Box
       sx={{
-        backgroundColor: '#bababaff', // 👈 pastel background
+        backgroundColor: '#bababaff',
         minHeight: '100vh',
         display: 'flex',
         flexWrap: 'wrap',
@@ -27,13 +33,14 @@ const Dashboard = () => {
         padding: 4,
       }}
     >
-        
+
     <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
       {cards.map((item, i) => (
         <FlexiCard key={i} content={item} />
       ))}
     </div>
          </Box>
+
          </div>
     );
 }
