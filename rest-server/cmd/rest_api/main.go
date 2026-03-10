@@ -10,6 +10,7 @@ import (
 	"github.com/PrasadJ28/gin-rest-server/internal/app/rest_api/database"
 	"github.com/PrasadJ28/gin-rest-server/internal/app/rest_api/handlers"
 	"github.com/PrasadJ28/gin-rest-server/internal/app/rest_api/services"
+	"github.com/PrasadJ28/gin-rest-server/internal/app/rest_api/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -40,6 +41,18 @@ func main() {
 		}
 	}()
 
+	minioStorage, err := storage.NewMinioStorage(
+		config.Infrastructure.MinioInternalEndpoint,
+		config.Infrastructure.MinioExternalEndpoint,
+		config.Infrastructure.MinioAccessKey,
+		config.Infrastructure.MinioSecretKey,
+		config.Infrastructure.MinioBucket,
+	)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to initialize Minio storage")
+		return
+	}
+
 	// Initialize repositories
 	userRepo := repository.NewUserRepository(client.DB)
 
@@ -49,6 +62,9 @@ func main() {
 	// Pass services to handlers
 	userHandler := handlers.NewUserHandler(userService)
 
+	uploadService := services.NewUploadService(minioStorage)
+	uploadHandler := handlers.NewUploadHandler(uploadService)
+
 	cors := config.CorsNew()
 
 	router := gin.Default()
@@ -56,6 +72,7 @@ func main() {
 
 	// Register routes
 	routes.RegisterPublicEndpoints(router, userHandler)
+	routes.RegisterUploadEndpoints(router, uploadHandler)
 
 	server := serve.NewServer(log.Logger, router, config)
 	server.Serve()

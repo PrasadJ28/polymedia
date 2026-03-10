@@ -2,7 +2,6 @@ package httphelper
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 // SuccessResponse ensures all data is wrapped in a "data" key

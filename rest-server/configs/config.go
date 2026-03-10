@@ -30,9 +30,12 @@ type databaseConfig struct {
 }
 
 type infrastructureConfig struct {
-    NatsUrl     string
-    MinioBucket string
-    // ...
+    NatsUrl              string
+    MinioInternalEndpoint string
+    MinioExternalEndpoint string
+    MinioBucket          string
+    MinioAccessKey       string
+    MinioSecretKey       string
 }
 
 func NewConfig() *Config {
@@ -55,6 +58,13 @@ func NewConfig() *Config {
 		Database: databaseConfig{
 			DatabaseDriver: GetEnvOrPanic(constants.EnvKeys.DBDriver),
 			DatabaseSource: GetEnvOrPanic(constants.EnvKeys.DBSource),
+		},
+		Infrastructure: infrastructureConfig{
+			MinioInternalEndpoint: getEnvOrDefault("MINIO_INTERNAL_ENDPOINT", "http://minio:9000"),
+			MinioExternalEndpoint: getEnvOrDefault("MINIO_EXTERNAL_ENDPOINT", "http://localhost:9000"),
+			MinioBucket:           getEnvOrDefault("MINIO_BUCKET", "polymedia-raw"),
+			MinioAccessKey:        GetEnvOrPanic("MINIO_ACCESS_KEY"),
+			MinioSecretKey:        GetEnvOrPanic("MINIO_SECRET_KEY"),
 		},
 	}
 

@@ -73,15 +73,35 @@ services:
   minio:
     image: minio/minio
     ports:
-      - "9000:9000" # API
-      - "9001:9001" # Console
+      - "9000:9000"
+      - "9001:9001"
     environment:
-      # DEFINING YOUR CREDENTIALS HERE
       MINIO_ROOT_USER: "admin_user"
       MINIO_ROOT_PASSWORD: "secure_password_123"
     command: server /data --console-address ":9001"
     volumes:
       - ./minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  minio-init:
+    image: minio/mc
+    depends_on:
+      minio:
+        condition: service_healthy        # waits for healthcheck to pass
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set myminio http://minio:9000 admin_user secure_password_123;
+      mc mb --ignore-existing myminio/polymedia-raw;
+      mc mb --ignore-existing myminio/polymedia-encoded;
+      mc mb --ignore-existing myminio/polymedia-thumbnails;
+      mc anonymous set download myminio/polymedia-thumbnails;
+      echo 'Minio init complete';
+      "
+    restart: "no"
 
   # C. Message Broker (Kafka - INFRASTRUCTURE, NOT SPRING)
   kafka:

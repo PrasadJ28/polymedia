@@ -12,3 +12,12 @@ func RegisterPublicEndpoints(router *gin.Engine, userHandlers *handlers.User) {
 	router.PUT("/users/:id", userHandlers.UpdateUser)
 	router.DELETE("/users/:id", userHandlers.DeleteUser)
 }
+
+func RegisterUploadEndpoints(router *gin.Engine, uploadHandler *handlers.UploadHandler) {
+    upload := router.Group("/upload")
+    {
+        upload.POST("/start",    uploadHandler.StartUpload)
+        upload.GET("/presign",   uploadHandler.PresignPart)
+        upload.POST("/complete", uploadHandler.CompleteUpload)
+    }
+}
