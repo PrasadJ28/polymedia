@@ -147,3 +147,5 @@ package.json
 package-lock.json
 mc
 mc.1
+rest-server/bin/
+rest-server/bin/fs
