@@ -3,6 +3,8 @@
     /* React + TS */
     "jsx": "react-jsx",
 
+    "module": "ESNext",
+
     /* Module resolution */
     "moduleResolution": "bundler",       // modern for Vite
     "moduleDetection": "force",

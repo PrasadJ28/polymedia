@@ -84,12 +84,23 @@ func (conf *Config) CorsNew() gin.HandlerFunc {
 	allowedOrigin := GetEnvOrPanic(constants.EnvKeys.CorsAllowedOrigin)
 
 	return cors.New(cors.Config{
-		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
-		AllowHeaders:     []string{constants.Headers.Origin, "Content-Type", "Authorization"}, // Added common headers
+		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodOptions},
+		AllowHeaders:     []string{constants.Headers.Origin, "Content-Type", "Authorization", "x-amz-date",
+    						"x-amz-content-sha256", "x-amz-security-token",}, // Added common headers
 		ExposeHeaders:    []string{constants.Headers.ContentLength},
 		AllowCredentials: true,
 		AllowOriginFunc: func(origin string) bool {
-			return origin == allowedOrigin
+			// 1. If it matches the ENV var exactly, allow it.
+			if origin == allowedOrigin {
+				return true
+			}
+
+			// 2. If we are in development, be lenient with localhost vs 127.0.0.1
+			if conf.AppEnv == "development" {
+				return origin == "http://127.0.0.1:5173" || origin == "http://localhost:5173"
+			}
+
+			return false
 		},
 		MaxAge: constants.MaxAge,
 	})

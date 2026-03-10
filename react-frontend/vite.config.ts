@@ -28,5 +28,20 @@ export default defineConfig({
     port: 5173,
     strictPort: true,  // error if port is taken
     open: true,        // auto-open browser
+
+    // --- ADD THIS SECTION ---
+    proxy: {
+      // Proxy API requests to your local Nginx Docker container
+      '/api': {
+        target: 'http://localhost:80',
+        changeOrigin: true,
+      },
+      // Proxy Video/MinIO requests to Nginx
+      '/videos': {
+        target: 'http://localhost:80',
+        changeOrigin: true,
+      }
+    }
+    // ------------------------
   },
 });

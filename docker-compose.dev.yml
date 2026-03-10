@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  # 1. Configure Nginx to talk to YOUR laptop instead of the container
+  nginx:
+    extra_hosts:
+      - "go-server:host-gateway"
+    ports:
+      - "80:80"
+
+  # 2. Kill the Go Container (so you can run 'go run main.go' locally)
+  go-server:
+    entrypoint: ["echo", "Go Server disabled for local dev"]
+    restart: "no"
+
+  # 3. Kill the React Container (so you can run 'npm run dev' locally)
+  react-frontend:
+    entrypoint: ["echo", "React Frontend disabled for local dev"]
+    restart: "no"
