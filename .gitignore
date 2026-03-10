@@ -140,3 +140,10 @@ vite.config.ts.timestamp-*
 postgres_data/
 minio_data/
 minio_data/
+mc
+mc.1
+go.mod
+package.json
+package-lock.json
+mc
+mc.1
