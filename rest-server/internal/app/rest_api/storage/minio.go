@@ -4,17 +4,17 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go-v2/aws" //for aws.String() which provides pointers ot string instead of direct string
+	"github.com/aws/aws-sdk-go-v2/aws"         //for aws.String() which provides pointers ot string instead of direct string
 	"github.com/aws/aws-sdk-go-v2/credentials" // NewStaticCredentialProvider holds access key and secrect
-	"github.com/aws/aws-sdk-go-v2/service/s3" // the actual S3 service client with all operations :CreateMultiPartUpload, UploadPart, CompleteMultipartUpload
+	"github.com/aws/aws-sdk-go-v2/service/s3"  // the actual S3 service client with all operations :CreateMultiPartUpload, UploadPart, CompleteMultipartUpload
 )
 
-//S3 client holds connections internally so we only pass pointers to ensure single instance
+// S3 client holds connections internally so we only pass pointers to ensure single instance
 type MinioStorage struct {
-	InternalClient *s3.Client //serverside operations
-	ExternalClient *s3.Client // Build presigned URLs
-	PresignClient *s3.PresignClient //a wrapper for ExternalClient to generate time limited signed URLs
-	Bucket string // the name of the Bucket
+	InternalClient *s3.Client        //serverside operations
+	ExternalClient *s3.Client        // Build presigned URLs
+	PresignClient  *s3.PresignClient //a wrapper for ExternalClient to generate time limited signed URLs
+	Bucket         string            // the name of the Bucket
 }
 
 func NewMinioStorage(
@@ -23,7 +23,7 @@ func NewMinioStorage(
 	accessKey string,
 	secretKey string,
 	bucket string,
-)( *MinioStorage, error) {
+) (*MinioStorage, error) {
 
 	//credentials object to sign every request using static keys from docker compose
 	creds := credentials.NewStaticCredentialsProvider(
@@ -34,17 +34,17 @@ func NewMinioStorage(
 
 	internalClient := s3.NewFromConfig(
 		aws.Config{
-			Region: "us-east-1", //required for AWS, although minio does not have region for signature algorithm
+			Region:      "us-east-1", //required for AWS, although minio does not have region for signature algorithm
 			Credentials: creds,
 		}, func(o *s3.Options) {
 			o.BaseEndpoint = aws.String(internalEndpoint) // talk to minio endpoint instead of AWS
-			o.UsePathStyle = true //bucket name part of URL path
+			o.UsePathStyle = true                         //bucket name part of URL path
 		},
 	)
 
 	externalClient := s3.NewFromConfig(
 		aws.Config{
-			Region: "us-east-1",
+			Region:      "us-east-1",
 			Credentials: creds,
 		}, func(o *s3.Options) {
 			o.BaseEndpoint = aws.String(externalEndpoint)
@@ -58,14 +58,14 @@ func NewMinioStorage(
 	})
 
 	if err != nil {
-		return nil, fmt.Errorf("mino bucket '%s' not found or unreachable", bucket, err)
+		return nil, fmt.Errorf("minio bucket '%s' not found or unreachable: %w", bucket, err)
 	}
 
 	return &MinioStorage{
 		InternalClient: internalClient,
 		ExternalClient: externalClient,
-		PresignClient: presignClient,
-		Bucket: bucket,
+		PresignClient:  presignClient,
+		Bucket:         bucket,
 	}, nil
 
 }
